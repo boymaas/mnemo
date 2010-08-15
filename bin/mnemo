@@ -23,18 +23,21 @@
 #   Copyright (c) 2010 Boy Maas. Licensed under the MIT License:
 #   http://www.opensource.org/licenses/mit-license.php
 
-require 'lib/cmdline_app'
 require 'fileutils'
 require 'pathname'
-require 'ruby-debug'
+
+BaseDir = File.dirname(File.dirname( File.expand_path __FILE__ ))
+Repository = File.join BaseDir, 'repos'
+RepositoryPathname  = Pathname.new(Repository)
+
+Dir.chdir BaseDir
+
+require 'lib/cmdline_app'
 
 class Mnemo < CmdlineApp
 
   include FileUtils
 
-  BaseDir = File.dirname(File.dirname( File.expand_path __FILE__ ))
-  Repository = File.join BaseDir, 'repos'
-  RepositoryPathname  = Pathname.new(Repository)
 
   def arguments_valid?
     true    
@@ -45,7 +48,6 @@ class Mnemo < CmdlineApp
 
   def process_command
     # Make sure we are running from the correct directory
-    Dir.chdir 
     puts "Running from .. " + Dir.pwd if $DEBUG
 
     # determing which action and forward accordingly
@@ -78,8 +80,11 @@ class Mnemo < CmdlineApp
     create_if_not_exist reference, path
     open_vim path, :end_of_file, 
                    :add_line, 
+                   :add_line, 
                    :append_desc, description, :add_line,
-                   :append_date
+                   :append_date,
+                   :add_line, 
+                   :add_line 
   end
 
   def cmd_clip reference, description = 'TODO description'
@@ -88,11 +93,13 @@ class Mnemo < CmdlineApp
     create_if_not_exist reference, path
     open_vim path, :end_of_file, 
                    :add_line, 
+                   :add_line, 
                    :append_desc, description, :add_line,
                    :append_date, 
                    :add_line, 
                    :add_line, 
                    :inject_clipboard
+
   end
 
   private
