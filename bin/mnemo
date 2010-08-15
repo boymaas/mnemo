@@ -1,16 +1,9 @@
 #!/usr/bin/env ruby
 
 # == Synopsis 
-#   This is a sample description of the application.
-#   Blah blah blah.
-#
-# == Examples
-#   This command does blah blah blah.
-#     ruby_cl_skeleton foo.txt
-#
-#   Other examples:
-#     ruby_cl_skeleton -q bar.doc
-#     ruby_cl_skeleton --verbose foo.html
+#   Mnemo makes it easy to manage knowledge which you are prone to forget. It
+#   is a kind of a Q&A which can be used in a later stage to refresh certain
+#   knownledge otherwise prone to forget.
 #
 # == Usage 
 #   mnemo [options] command command_arguments
@@ -22,7 +15,6 @@
 #   -v, --version       Display the version, then exit
 #   -q, --quiet         Output as little as possible, overrides verbose
 #   -V, --verbose       Verbose output
-#   TO DO - add additional options
 #
 # == Author
 #   Boy Maas (boy.maas@gmail.com)
