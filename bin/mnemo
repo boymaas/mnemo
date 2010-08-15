@@ -38,14 +38,8 @@ class Mnemo < CmdlineApp
 
   include FileUtils
 
-
-  def arguments_valid?
-    true    
-  end
-
-  def process_arguments
-  end
-
+  # dispatches corresponding command to appropiate
+  # instance method
   def process_command
     # Make sure we are running from the correct directory
     puts "Running from .. " + Dir.pwd if $DEBUG
@@ -59,18 +53,23 @@ class Mnemo < CmdlineApp
     send(method, *@arguments)
   end
 
+  # command line completion
+  def cmd_compreply
+      puts references_by_pattern * " "
+  end
+
+  # lists appropiate files matching a certain pattern
   def cmd_list pattern = '.'
     puts "Following mnemo's #{pattern && "matching regexp /#{pattern}/"} are present"
     puts
-    pattern = Regexp.compile pattern
-
-    Dir[File.join Repository, '**', '*.mkd'].grep(pattern).each do |file|
-      puts (" " * 4) + path2reference( file )
+    references_by_pattern(pattern).each do |reference|
+      puts (" " * 4) + reference
     end
 
     puts
     puts "Done .."
   end
+
 
   # add 
   # edit the file and adds comment to it
@@ -87,6 +86,8 @@ class Mnemo < CmdlineApp
                    :add_line 
   end
 
+  # adds clipboard content
+  # to the file
   def cmd_clip reference, description = 'TODO description'
     path = reference2path reference
     puts "adding clipboard content to " + reference
@@ -103,6 +104,18 @@ class Mnemo < CmdlineApp
   end
 
   private
+
+  def references_by_pattern pattern = '.'
+    pattern = Regexp.compile pattern
+
+    paths_by_pattern.map{ |p| path2reference p }.grep(pattern)
+  end
+
+  def paths_by_pattern pattern = '.'
+    pattern = Regexp.compile pattern
+
+    Dir[File.join Repository, '**', '*.mkd'].grep(pattern)  
+  end
 
   def create_if_not_exist reference, path
     if !File.exist? path
@@ -124,10 +137,11 @@ class Mnemo < CmdlineApp
     :inject_clipboard => ':.!xclip -o  -selection clipboard',
     :append_desc => 'a# @desc: ',
     :append_date => ':.!date0i# @date ',
+    :write => ':w'
   }
 
   def open_vim path, *commands
-    cmd = commands.reduce('') do |s, c| 
+    cmd = commands.push(:write).reduce('') do |s, c| 
       s += case c
            when Symbol then
              VimCommands[c] 
@@ -176,6 +190,16 @@ class Mnemo < CmdlineApp
       rel_path = file_path.relative_path_from RepositoryPathname
       reference = rel_path.to_s.gsub %r{.mkd$}, ''
       reference.gsub! %r{/+}, '-'
+      reference
+  end
+
+  protected
+  # Stuff CmdlineApp needs defined
+  def arguments_valid?
+    true    
+  end
+
+  def process_arguments
   end
 end
 
