@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby 
+#!/usr/bin/env ruby
 
 # == Synopsis 
 #   This is a sample description of the application.
@@ -13,7 +13,7 @@
 #     ruby_cl_skeleton --verbose foo.html
 #
 # == Usage 
-#   mnemo [options] 
+#   mnemo [options] command command_arguments
 #
 #   For help use: mnemo -h
 #
@@ -25,15 +25,25 @@
 #   TO DO - add additional options
 #
 # == Author
-#   YourName
+#   Boy Maas (boy.maas@gmail.com)
 #
 # == Copyright
-#   Copyright (c) 2007 YourName. Licensed under the MIT License:
+#   Copyright (c) 2010 Boy Maas. Licensed under the MIT License:
 #   http://www.opensource.org/licenses/mit-license.php
 
 require 'lib/cmdline_app'
+require 'fileutils'
+require 'pathname'
+require 'ruby-debug'
 
 class Mnemo < CmdlineApp
+
+  include FileUtils
+
+  BaseDir = File.dirname(File.dirname( File.expand_path __FILE__ ))
+  Repository = File.join BaseDir, 'repos'
+  RepositoryPathname  = Pathname.new(Repository)
+
   def arguments_valid?
     true    
   end
@@ -41,9 +51,135 @@ class Mnemo < CmdlineApp
   def process_arguments
   end
 
-  def run
+  def process_command
+    # Make sure we are running from the correct directory
+    Dir.chdir 
+    puts "Running from .. " + Dir.pwd if $DEBUG
+
+    # determing which action and forward accordingly
+    method = "cmd_" + @arguments.shift
+    if !respond_to? method
+      puts "do not have `#{method}' in my reportoire .."
+      output_usage
+    end
+    send(method, *@arguments)
+  end
+
+  def cmd_list pattern = '.'
+    puts "Following mnemo's #{pattern && "matching regexp /#{pattern}/"} are present"
+    puts
+    pattern = Regexp.compile pattern
+
+    Dir[File.join Repository, '**', '*.mkd'].grep(pattern).each do |file|
+      puts (" " * 4) + path2reference( file )
+    end
+
+    puts
+    puts "Done .."
+  end
+
+  # add 
+  # edit the file and adds comment to it
+  def cmd_add reference, description = 'TODO description'
+    path = reference2path reference
+    puts "adding content to " + reference
+    create_if_not_exist reference, path
+    open_vim path, :end_of_file, 
+                   :add_line, 
+                   :append_desc, description, :add_line,
+                   :append_date
+  end
+
+  def cmd_clip reference, description = 'TODO description'
+    path = reference2path reference
+    puts "adding clipboard content to " + reference
+    create_if_not_exist reference, path
+    open_vim path, :end_of_file, 
+                   :add_line, 
+                   :append_desc, description, :add_line,
+                   :append_date, 
+                   :add_line, 
+                   :add_line, 
+                   :inject_clipboard
+  end
+
+  private
+
+  def create_if_not_exist reference, path
+    if !File.exist? path
+      if ask_y_or_n "'#{reference}' doesn't exist? Want to create it" 
+        mkdir_p File.dirname(path)
+        touch path
+      else
+        puts "abort ..."
+        return
+      end
+    end
+  end
+
+  # individual commands should end
+  # in command mode
+  VimCommands = {
+    :end_of_file => 'G',
+    :add_line => 'o',
+    :inject_clipboard => ':.!xclip -o  -selection clipboard',
+    :append_desc => 'a# @desc: ',
+    :append_date => ':.!date0i# @date ',
+  }
+
+  def open_vim path, *commands
+    cmd = commands.reduce('') do |s, c| 
+      s += case c
+           when Symbol then
+             VimCommands[c] 
+           when String then
+             "a#{c}"
+           else
+             'Todo'
+           end
+    end
+    system("vim #{path} -c 'normal #{cmd}'")
+  end
+
+  def getc
+    system("stty raw -echo")
+    c = STDIN.getc
+  ensure
+    system("stty raw -echo")
+    c
+  end
+
+  def ask_y_or_n content
+      begin
+        print content + ' (y or no) ? '
+        answer = getc
+        print "\r\n"
+      end until(answer == ?y or answer == ?n or answer == 13)
+      if block_given? and answer == ?y
+        yield
+      end
+      return answer == ?y
+  end
+
+  # path
+
+  def prepend_repos_path p
+    File.join Repository, p
+  end
+
+  def reference2path r
+    # todo give error when not in correct format
+    p = r.gsub /[^\w]/, '/'
+    prepend_repos_path(p) + '.mkd'
+  end
+  def path2reference p
+      file_path = Pathname.new(p)
+      rel_path = file_path.relative_path_from RepositoryPathname
+      reference = rel_path.to_s.gsub %r{.mkd$}, ''
+      reference.gsub! %r{/+}, '-'
   end
 end
+
 
 mnemo = Mnemo.new(ARGV, STDIN)
 mnemo.run
