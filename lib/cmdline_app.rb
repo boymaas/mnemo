@@ -16,7 +16,6 @@ class CmdlineApp
     @options = OpenStruct.new
     @options.verbose = false
     @options.quiet = false
-    raise "TO DO - add additional defaults"
   end
 
   # Parse options, check arguments, then process the command
@@ -49,7 +48,6 @@ class CmdlineApp
       opts.on('-h', '--help')       { output_help }
       opts.on('-V', '--verbose')    { @options.verbose = true }  
       opts.on('-q', '--quiet')      { @options.quiet = true }
-      raise "TO DO - add additional options"
             
       opts.parse!(@arguments) rescue return false
       
@@ -72,8 +70,7 @@ class CmdlineApp
 
     # True if required arguments were provided
     def arguments_valid?
-      raise "TO DO - implement your real logic here"
-      true if @arguments.length == 1 
+      raise "TODO - parse arguments"
     end
     
     # Setup the arguments
