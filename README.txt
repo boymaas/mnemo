@@ -1,35 +1,34 @@
 = mnemo
 
-* FIX (url)
+* http://www.boymaas.nl
 
 == DESCRIPTION:
 
-FIX (describe your package)
+Organizes those things one is probably going to forget. Enabling easy
+storage of items one would easily forget. Items
+are stored in plain tekst files using ones editor (currently vim).
 
-== FEATURES/PROBLEMS:
+The idea is to attach a memorizer functionality to fire those little neurons
+inside your head. Enabling everybody to form more solid neural nets (as poven
+scientifically)  which could result in better understanding of those topics
+which are of interest of the specific user of mnemo.
 
-* FIX (list of features or problems)
+To ease usage, it even contains a bash completion function.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  nmemo add ruby-coolsnippets "cool recursion based on .."
+  nmemo clip ruby-coolsnippets "cool recursion based on .."
+  nmemo list
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+ruby, and only ruby
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
-
-== DEVELOPERS:
-
-After checking out the source, run:
-
-  $ rake newb
-
-This task will install any missing dependencies, run the tests/specs,
-and generate the RDoc.
+Not yet, since it's still a baby growing while using
+* (sudo gem install, anything else)
 
 == LICENSE:
 
