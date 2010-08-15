@@ -4,16 +4,16 @@
 
 == DESCRIPTION:
 
-Organizes those things one is probably going to forget. Enabling easy
-storage of items one would easily forget. Items
-are stored in plain tekst files using ones editor (currently vim).
+Organizes those things one is probably going to forget. Items are stored in
+plain tekst files using ones editor (currently vim).
 
-The idea is to attach a memorizer functionality to fire those little neurons
-inside your head. Enabling everybody to form more solid neural nets (as poven
-scientifically)  which could result in better understanding of those topics
-which are of interest of the specific user of mnemo.
+The idea is to attach memorizer functionality to fire those little neurons
+inside your head at certain intervals. Rehearsing facts at certain increasing
+interval allows you to form more solid neural nets (as poven scientifically)
+and will result in better understanding of those topics which one finds
+interesting enough to memorize.
 
-To ease usage, it even contains a bash completion function.
+Contains bash-completion function to easy finding your references.
 
 == SYNOPSIS:
 
