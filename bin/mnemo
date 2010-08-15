@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby 
+
+puts $LOAD_PATH
+require 'lib/cmdline_app'
+
+class Mnemo < CmdlineApp
+end
+
+mnemo = Mnemo.new(ARGV, STDIN)
+mnemo.run
+
+abort "you need to write me"

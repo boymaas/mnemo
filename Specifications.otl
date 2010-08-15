@@ -1,0 +1,58 @@
+Mnemo
+
+A cheat sheet application based on git, using github online storage. Or a local repository.
+
+rails.cheat
+rails/vim
+rails/validators
+
+Cheat sheets can contain multiple levels:
+
+* add
+
+mnemo add rails
+mnemo add rails.vim
+
+* edit
+
+mnemo edit rails
+mnemo edit rails.vim
+
+* delete
+
+mnemo delete rails
+
+are your sure?
+
+* searching
+
+mnemo list <categories>
+
+lists first the main categories, one can add to these
+
+mnemo find
+
+like find in shell, searches on filename
+
+mnemo grep
+
+like grep in shell, searches in contents of filename
+
+COMMAND LINE COMPLETION
+
+CHEAT FILE FORMAT
+
+Cheat files are in markdown format, they should start with
+a description and then a plaintext format which makes it easy to work with
+
+GIT
+
+possible to forward git commands to the ~/.mnemo directory containing a checkout
+of all the cheatsheets.
+
+mnemo git diff
+mnemo git status
+
+does a git diff
+
+
