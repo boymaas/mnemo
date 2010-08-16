@@ -6,7 +6,7 @@
 #   knownledge otherwise prone to forget.
 #
 # == Usage 
-#   mnemo [options] command command_arguments
+#   mnemo [options] add|list|clip reference "description of snippet"?
 #
 #   For help use: mnemo -h
 #
@@ -27,7 +27,7 @@ require 'fileutils'
 require 'pathname'
 
 BaseDir = File.dirname(File.dirname( File.expand_path __FILE__ ))
-Repository = File.join BaseDir, 'repos'
+Repository = File.join ENV['HOME'], 'Personal', 'Mnemos'
 RepositoryPathname  = Pathname.new(Repository)
 
 Dir.chdir BaseDir
@@ -51,6 +51,8 @@ class Mnemo < CmdlineApp
       output_usage
     end
     send(method, *@arguments)
+  rescue ArgumentError
+    output_usage
   end
 
   # command line completion
@@ -75,8 +77,10 @@ class Mnemo < CmdlineApp
   # edit the file and adds comment to it
   def cmd_add reference, description = 'TODO description'
     path = reference2path reference
+    unless create_if_not_exist reference, path
+      return
+    end
     puts "adding content to " + reference
-    create_if_not_exist reference, path
     open_vim path, :end_of_file, 
                    :add_line, 
                    :add_line, 
@@ -90,8 +94,10 @@ class Mnemo < CmdlineApp
   # to the file
   def cmd_clip reference, description = 'TODO description'
     path = reference2path reference
+    unless create_if_not_exist reference, path
+      return
+    end
     puts "adding clipboard content to " + reference
-    create_if_not_exist reference, path
     open_vim path, :end_of_file, 
                    :add_line, 
                    :add_line, 
@@ -122,11 +128,12 @@ class Mnemo < CmdlineApp
       if ask_y_or_n "'#{reference}' doesn't exist? Want to create it" 
         mkdir_p File.dirname(path)
         touch path
+        return true
       else
-        puts "abort ..."
-        return
+        return false
       end
     end
+    return true
   end
 
   # individual commands should end
@@ -158,7 +165,7 @@ class Mnemo < CmdlineApp
     system("stty raw -echo")
     c = STDIN.getc
   ensure
-    system("stty raw -echo")
+    system("stty -raw echo")
     c
   end
 
