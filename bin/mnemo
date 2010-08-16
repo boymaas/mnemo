@@ -56,8 +56,14 @@ class Mnemo < CmdlineApp
   end
 
   # command line completion
+  # list all references
   def cmd_compreply
-      puts references_by_pattern * " "
+    puts references_by_pattern * " "
+  end
+  # command line completions
+  # list add commands
+  def cmd_cmds
+    puts self.methods.grep(/^cmd_/).map {|m| m[4..-1]} * " "
   end
 
   # lists appropiate files matching a certain pattern
@@ -82,12 +88,31 @@ class Mnemo < CmdlineApp
     end
     puts "adding content to " + reference
     open_vim path, :end_of_file, 
-                   :add_line, 
-                   :add_line, 
-                   :append_desc, description, :add_line,
-                   :append_date,
-                   :add_line, 
-                   :add_line 
+      :add_line, 
+      :add_line, 
+      :append_desc, description, :add_line,
+      :append_date,
+      :add_line, 
+      :add_line 
+  end
+
+  def cmd_edit reference
+    path = reference2path reference
+    unless create_if_not_exist reference, path
+      return
+    end
+    puts "adding content to " + reference
+    open_vim path
+  end
+
+  # version control
+  def cmd_git_push 
+    Dir.chdir Repository
+    system('git add .')
+    system('git commit -m "mnemo commit"')
+    system('git push')
+  ensure
+    Dir.chdir BaseDir
   end
 
   # adds clipboard content
@@ -99,13 +124,13 @@ class Mnemo < CmdlineApp
     end
     puts "adding clipboard content to " + reference
     open_vim path, :end_of_file, 
-                   :add_line, 
-                   :add_line, 
-                   :append_desc, description, :add_line,
-                   :append_date, 
-                   :add_line, 
-                   :add_line, 
-                   :inject_clipboard
+      :add_line, 
+      :add_line, 
+      :append_desc, description, :add_line,
+      :append_date, 
+      :add_line, 
+      :add_line, 
+      :inject_clipboard
 
   end
 
@@ -170,15 +195,15 @@ class Mnemo < CmdlineApp
   end
 
   def ask_y_or_n content
-      begin
-        print content + ' (y or no) ? '
-        answer = getc
-        print "\r\n"
-      end until(answer == ?y or answer == ?n or answer == 13)
-      if block_given? and answer == ?y
-        yield
-      end
-      return answer == ?y
+    begin
+      print content + ' (y or no) ? '
+      answer = getc
+      print "\r\n"
+    end until(answer == ?y or answer == ?n or answer == 13)
+    if block_given? and answer == ?y
+      yield
+    end
+    return answer == ?y
   end
 
   # path
@@ -193,11 +218,11 @@ class Mnemo < CmdlineApp
     prepend_repos_path(p) + '.mkd'
   end
   def path2reference p
-      file_path = Pathname.new(p)
-      rel_path = file_path.relative_path_from RepositoryPathname
-      reference = rel_path.to_s.gsub %r{.mkd$}, ''
-      reference.gsub! %r{/+}, '-'
-      reference
+    file_path = Pathname.new(p)
+    rel_path = file_path.relative_path_from RepositoryPathname
+    reference = rel_path.to_s.gsub %r{.mkd$}, ''
+    reference.gsub! %r{/+}, '-'
+    reference
   end
 
   protected

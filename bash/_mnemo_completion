@@ -8,18 +8,20 @@ _mnemo()
     #
     #  The basic options we'll complete.
     #
-    opts="list add clip"
+    opts=`mnemo cmds`
 
 
     #
     #  Complete the arguments to some of the basic commands.
     #
     case "${prev}" in
-      @(list|add|clip))
+      @(list|add|clip|edit))
 	    references=`mnemo compreply`
 	    COMPREPLY=( $(compgen -W "${references}" -- ${cur}) )
             return 0
             ;;
+      git_push)
+           COMPREPLY=()
     esac
 
    COMPREPLY=($(compgen -W "${opts}" -- ${cur}))  
