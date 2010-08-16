@@ -6,7 +6,7 @@
 #   knownledge otherwise prone to forget.
 #
 # == Usage 
-#   mnemo [options] add|list|clip reference "description of snippet"?
+#   mnemo [options] add|list|clip|edit reference "description of snippet"?
 #
 #   For help use: mnemo -h
 #
@@ -228,7 +228,7 @@ class Mnemo < CmdlineApp
   protected
   # Stuff CmdlineApp needs defined
   def arguments_valid?
-    true    
+    true if @arguments.size >= 1    
   end
 
   def process_arguments
